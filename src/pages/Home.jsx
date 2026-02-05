@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 
-const Home = ({ category, country, useNewest = false, refreshKey = 0, searchTerm = "" }) => {
+const Home = ({
+  category = "general",
+  country = "in",
+  useNewest = false,
+  refreshKey = 0,
+  searchTerm = ""
+}) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -9,116 +15,92 @@ const Home = ({ category, country, useNewest = false, refreshKey = 0, searchTerm
   const [showScroll, setShowScroll] = useState(false);
   const [page, setPage] = useState(1);
 
+  // ✅ FETCH VIA NETLIFY FUNCTION
   const fetchNewsPage = async (pageNum = 1, append = false) => {
-    if (pageNum === 1) setLoading(true);
-    else setLoadingMore(true);
+    pageNum === 1 ? setLoading(true) : setLoadingMore(true);
 
-    let url = "";
-
-    const BASE = (import.meta.env.VITE_NEWS_API_BASE || "https://newsapi.org/v2").replace(/\/$/, "");
-    const KEY = import.meta.env.VITE_NEWS_API_KEY || "";
-    const KEY_PARAM = import.meta.env.VITE_NEWS_API_KEY_PARAM || "apiKey";
-
-    if (country === "in") {
-      const query = category === "general" ? "india" : `india ${category}`;
-      url = `${BASE}/search?q=${encodeURIComponent(query)}&sortBy=publishedAt&pageSize=40&page=${pageNum}&${KEY_PARAM}=${KEY}`;
-    } else {
-      if (useNewest) {
-        const q = category === "general" ? "news" : category;
-        url = `${BASE}/search?q=${encodeURIComponent(q)}&sortBy=publishedAt&pageSize=40&language=en&page=${pageNum}&${KEY_PARAM}=${KEY}`;
-      } else {
-        url = `${BASE}/top-headlines?country=us&category=${category}&pageSize=40&page=${pageNum}&${KEY_PARAM}=${KEY}`;
-      }
-    }
+    const params = new URLSearchParams({
+      country,
+      category,
+      q: searchTerm || "",
+      page: pageNum
+    });
 
     try {
-      const res = await fetch(url);
+      const res = await fetch(`/api/news?${params.toString()}`);
       const data = await res.json();
 
-      if (data.status && data.status !== "ok") {
-        setApiError(`${data.code || "error"}: ${data.message || "Failed to fetch news"}`);
-        if (pageNum === 1) setArticles([]);
-      } else {
-        setApiError(null);
-        const newArticles = data.articles || [];
-        if (append) {
-          setArticles((prev) => [...prev, ...newArticles]);
-        } else {
-          setArticles(newArticles);
-        }
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to fetch news");
       }
+
+      const newArticles = data.articles || [];
+
+      setApiError(null);
+      setArticles((prev) => (append ? [...prev, ...newArticles] : newArticles));
     } catch (err) {
       console.error("News fetch failed:", err);
       setApiError(err.message || "Network error");
       if (pageNum === 1) setArticles([]);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
     }
-
-    if (pageNum === 1) setLoading(false);
-    else setLoadingMore(false);
   };
 
+  // 🔹 Fetch first page or when category/country/refresh changes
   useEffect(() => {
     setPage(1);
     fetchNewsPage(1, false);
-  }, [category, country, useNewest, refreshKey]);
+  }, [category, country, refreshKey]);
 
+  // 🔹 Scroll button show/hide
   useEffect(() => {
     const onScroll = () => setShowScroll(window.scrollY > 400);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
 
   if (apiError) {
     return (
       <div className="center-msg">
         <h2>Unable to load news</h2>
         <p style={{ color: "var(--muted)" }}>{apiError}</p>
-        <p style={{ color: "var(--muted)" }}>Likely causes: invalid API key, rate limit, or missing env variable. Restart the dev server after updating <code>.env</code>.</p>
       </div>
     );
   }
 
-  // apply client-side search filtering
-  const filtered = (articles || []).filter((a) => {
+  // 🔹 Client-side search
+  const filtered = articles.filter((a) => {
     if (!searchTerm) return true;
     const s = searchTerm.toLowerCase();
     return (
-      (a.title && a.title.toLowerCase().includes(s)) ||
-      (a.description && a.description.toLowerCase().includes(s)) ||
-      (a.source?.name && a.source.name.toLowerCase().includes(s))
+      a.title?.toLowerCase().includes(s) ||
+      a.description?.toLowerCase().includes(s)
     );
   });
 
-  if (!filtered || filtered.length === 0) {
-    return <h2 className="center-msg">No news available for this selection</h2>;
+  if (filtered.length === 0) {
+    return <h2 className="center-msg">No news available</h2>;
   }
 
-  const formatDate = (iso) => {
-    try {
-      return new Date(iso).toLocaleString();
-    } catch {
-      return "";
-    }
-  };
+  // 🔹 Render
   return (
     <main>
       <section className="news-container">
         {filtered.map((news, index) => {
           const published = news.publishedAt ? new Date(news.publishedAt) : null;
-          const isNew = published ? (Date.now() - published.getTime()) < 1000 * 60 * 60 * 12 : false; // 12 hours
+          const isNew = published ? (Date.now() - published.getTime()) < 1000 * 60 * 60 * 12 : false;
 
           return (
             <article key={index} className="news-card">
               <div className="media">
                 <img
                   src={news.image || news.urlToImage || "https://via.placeholder.com/800x450?text=No+Image"}
-                  alt={news.title || "news image"}
+                  alt={news.title}
                 />
-
                 {isNew && <span className="badge">New</span>}
               </div>
 
@@ -127,8 +109,8 @@ const Home = ({ category, country, useNewest = false, refreshKey = 0, searchTerm
                 <p className="description">{news.description}</p>
 
                 <div className="meta">
-                  <span className="source">{typeof news.source === "string" ? news.source : news.source?.name}</span>
-                  <span className="date">{formatDate(news.publishedAt)}</span>
+                  <span className="source">{news.source?.name || "Unknown"}</span>
+                  <span className="date">{published ? published.toLocaleString() : ""}</span>
                 </div>
 
                 <a className="read-more-btn" href={news.url} target="_blank" rel="noreferrer">
