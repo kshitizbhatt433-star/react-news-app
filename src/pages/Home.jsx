@@ -4,7 +4,6 @@ import Loader from "../components/Loader";
 const Home = ({
   category = "general",
   country = "in",
-  useNewest = false,
   refreshKey = 0,
   searchTerm = ""
 }) => {
@@ -15,27 +14,41 @@ const Home = ({
   const [showScroll, setShowScroll] = useState(false);
   const [page, setPage] = useState(1);
 
-  // ✅ FETCH VIA NETLIFY FUNCTION
+  // ✅ Fetch news via Netlify function
   const fetchNewsPage = async (pageNum = 1, append = false) => {
     pageNum === 1 ? setLoading(true) : setLoadingMore(true);
 
     const params = new URLSearchParams({
       country,
       category,
-      q: searchTerm || "",
-      page: pageNum
+      page: pageNum,
+      q: searchTerm
     });
 
     try {
-      const res = await fetch(`/api/news?${params.toString()}`);
-      const data = await res.json();
+      // 🔹 Use full Netlify function path
+      const url = `/.netlify/functions/news?${params.toString()}`;
+      console.log("Fetching from:", url);
+      
+      const res = await fetch(url);
+      console.log("Response status:", res.status, "Content-Type:", res.headers.get("content-type"));
+      
+      const text = await res.text();
+      console.log("Raw response (first 200 chars):", text.substring(0, 200));
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        console.error("JSON parse failed. Response starts with:", text.substring(0, 100));
+        throw new Error("Invalid JSON response: " + parseErr.message);
+      }
 
       if (!res.ok || data.error) {
         throw new Error(data.error || "Failed to fetch news");
       }
 
       const newArticles = data.articles || [];
-
       setApiError(null);
       setArticles((prev) => (append ? [...prev, ...newArticles] : newArticles));
     } catch (err) {
@@ -48,11 +61,11 @@ const Home = ({
     }
   };
 
-  // 🔹 Fetch first page or when category/country/refresh changes
+  // 🔹 Fetch first page or when category/country/refreshKey changes
   useEffect(() => {
     setPage(1);
     fetchNewsPage(1, false);
-  }, [category, country, refreshKey]);
+  }, [category, country, refreshKey, searchTerm]);
 
   // 🔹 Scroll button show/hide
   useEffect(() => {
@@ -72,7 +85,7 @@ const Home = ({
     );
   }
 
-  // 🔹 Client-side search
+  // 🔹 Client-side search filter
   const filtered = articles.filter((a) => {
     if (!searchTerm) return true;
     const s = searchTerm.toLowerCase();
@@ -99,7 +112,7 @@ const Home = ({
               <div className="media">
                 <img
                   src={news.image || news.urlToImage || "https://via.placeholder.com/800x450?text=No+Image"}
-                  alt={news.title}
+                  alt={news.title || "news image"}
                 />
                 {isNew && <span className="badge">New</span>}
               </div>
