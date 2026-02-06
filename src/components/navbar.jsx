@@ -5,7 +5,13 @@ const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, s
     <header className="navbar">
       <div className="nav-container nav-top">
         <div className="brand center-brand">
-          <h1 className="logo">🗞️ <strong>Newsify</strong></h1>
+          <div className="logo-wrapper">
+            <h1 className="logo">
+              <span className="logo-text">⚡ HeadlineX ⚡</span>
+              <span className="logo-sticker">🔥</span>
+            </h1>
+            <p className="tagline">Breaking News at Speed of Light</p>
+          </div>
         </div>
 
         <div className="header-controls">

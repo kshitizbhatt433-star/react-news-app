@@ -56,7 +56,7 @@ function App() {
 
       <footer className="site-footer">
         <div className="container footer-inner">
-          <span>Made with ❤️ — Newsify</span>
+          <span>Made with ❤️ — HeadlineX</span>
           <span>Data from NewsAPI.org</span>
         </div>
       </footer>

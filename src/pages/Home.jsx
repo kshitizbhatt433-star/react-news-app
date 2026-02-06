@@ -236,7 +236,9 @@ const Home = ({
       {/* 🔹 Category Section at Bottom */}
       <section className="category-section">
         <div className="category-container">
-          <h2 className="category-heading">📰 Explore News Categories</h2>
+          <h2 className="category-heading">
+            <span className="heading-text">✨ Explore HeadlineX Categories ✨</span>
+          </h2>
           <div className="category-grid">
             <div className="category-item" onClick={() => window.location.hash = "#global"}>
               <div className="category-icon">🌍</div>
