@@ -115,6 +115,49 @@ h1,h2,h3{margin:0}
 .empty-msg{text-align:center;color:var(--muted);padding:20px;font-size:14px}
 .collection-info{font-size:14px;color:var(--muted);text-align:center;padding:10px}
 
+/* Auth Form */
+.auth-form{padding:20px;display:flex;flex-direction:column;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:8px}
+.form-group label{font-size:13px;font-weight:600;color:var(--text)}
+.form-input{padding:10px 12px;border:1px solid rgba(15,23,36,0.1);border-radius:8px;background:var(--card-bg);color:var(--text);font-size:14px;transition:.2s}
+.form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,182,212,0.1)}
+.error-msg{color:#ff4757;font-size:13px;padding:8px;background:rgba(255,71,87,0.1);border-radius:6px}
+.submit-btn{padding:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:.2s;font-size:14px}
+.submit-btn:hover{transform:translateY(-2px);opacity:.9}
+.auth-toggle{text-align:center;padding:0 20px 20px 20px;border-top:1px solid rgba(0,0,0,0.06);font-size:13px;color:var(--muted)}
+.toggle-btn{background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;padding:0 4px;transition:.2s}
+.toggle-btn:hover{text-decoration:underline;opacity:.8}
+
+/* Comments Section */
+.comments-section{margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,0.06)}
+.comments-toggle{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;transition:.2s;width:100%}
+.comments-toggle:hover{transform:translateY(-2px);opacity:.9}
+.comments-container{margin-top:16px}
+.comment-form{display:flex;flex-direction:column;gap:12px;padding:12px;background:var(--glass);border-radius:8px;margin-bottom:16px}
+.user-info{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.user-info .user-avatar{width:32px;height:32px;font-size:14px}
+.user-info .username{font-size:13px;font-weight:600;color:var(--text)}
+.comment-input{padding:10px 12px;border:1px solid rgba(15,23,36,0.1);border-radius:8px;background:var(--card-bg);color:var(--text);font-size:13px;font-family:inherit;resize:vertical}
+.comment-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(6,182,212,0.1)}
+.comment-submit{padding:8px 12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;transition:.2s}
+.comment-submit:hover{transform:translateY(-1px);opacity:.9}
+.login-prompt{text-align:center;padding:12px;color:var(--muted);font-size:13px}
+.comments-list{display:flex;flex-direction:column;gap:12px}
+.no-comments{text-align:center;padding:20px;color:var(--muted);font-size:13px}
+.comment-item{padding:12px;background:var(--glass);border-radius:8px;border-left:3px solid var(--accent)}
+.comment-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.comment-user{display:flex;align-items:flex-start;gap:8px;flex:1}
+.comment-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.comment-info{display:flex;flex-direction:column;gap:2px}
+.comment-author{font-size:13px;font-weight:600;color:var(--text)}
+.comment-time{font-size:11px;color:var(--muted)}
+.delete-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:0;transition:.2s}
+.delete-btn:hover{opacity:.7;transform:scale(1.1)}
+.comment-text{margin:8px 0;font-size:13px;color:var(--text);line-height:1.4}
+.comment-actions{display:flex;gap:8px;margin-top:8px}
+.like-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;transition:.2s}
+.like-btn:hover{background:var(--glass);transform:scale(1.05)}
+
 /* Reading Time Badge */
 .reading-time{background:var(--glass);padding:4px 8px;border-radius:6px;font-size:12px;white-space:nowrap}
 
@@ -161,6 +204,17 @@ html.dark-mode .navbar{background:rgba(30,41,59,0.95)}
 /* Theme Toggle Button */
 .theme-toggle{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px;cursor:pointer;font-size:18px;transition:.2s;min-width:38px}
 .theme-toggle:hover{background:var(--glass);transform:rotate(20deg)}
+
+/* User Profile */
+.user-profile{display:flex;align-items:center;gap:8px}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--glass);padding:6px 10px;border-radius:8px}
+.user-avatar{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.username-display{font-size:13px;font-weight:600;color:var(--text);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:16px;transition:.2s}
+.logout-btn:hover{background:var(--glass);transform:scale(1.05)}
+
+.login-btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s;white-space:nowrap}
+.login-btn:hover{transform:translateY(-2px);opacity:.9}
 
 /* Loader */
 .loader-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text)}
@@ -231,11 +285,10 @@ html.dark-mode .dot{background:linear-gradient(180deg,#1a2332,#0f1724)}
   .center-brand{flex:0 1 100%;order:1}
   .logo{font-size:24px}
   .tagline{font-size:10px}
-  .logo-sticker{font-size:20px;margin-left:4px}
-  .header-controls{flex:0 1 100%;order:2;justify-content:center;gap:6px}
-  .search-wrap{min-width:100%;max-width:100%}
+  .header-controls{flex:0 1 100%;order:2;justify-content:center;gap:6px;flex-wrap:wrap}
+  .search-wrap{min-width:100%;max-width:100%;flex:0 1 100%}
   .search-input{width:100%}
-  .right-controls{width:100%;justify-content:center}
+  .right-controls{width:100%;justify-content:center;gap:6px}
   .menu-list{width:100%;gap:6px}
   .menu-list li{padding:8px 10px;font-size:13px;flex:1;text-align:center}
   .news-container{padding:12px;gap:14px;grid-template-columns:1fr}
@@ -260,14 +313,22 @@ html.dark-mode .dot{background:linear-gradient(180deg,#1a2332,#0f1724)}
   .trending-info h4{font-size:12px}
   .trending-source{font-size:10px}
   .collections-btn{font-size:12px;padding:6px 10px}
+  .user-badge{gap:4px}
+  .username-display{max-width:80px;font-size:12px}
+  .login-btn{font-size:12px;padding:6px 10px}
+  .comments-toggle{font-size:12px;padding:8px 12px}
+  .comment-form{padding:10px;gap:10px}
+  .comment-input{padding:8px 10px;font-size:12px}
 }
 
 @media (max-width:480px){
   #root{padding:1rem}
   .logo{font-size:22px}
-  .logo-sticker{font-size:18px}
   .tagline{font-size:9px}
   .nav-container{padding:6px 10px}
+  .header-controls{gap:4px}
+  .search-wrap{flex:0 1 100%}
+  .right-controls{gap:4px}
   .menu-list li{padding:6px 8px;font-size:12px}
   .news-container{padding:8px;gap:12px}
   .news-card .title{font-size:15px}
@@ -294,6 +355,21 @@ html.dark-mode .dot{background:linear-gradient(180deg,#1a2332,#0f1724)}
   .collections-btn{font-size:11px;padding:6px 8px}
   .modal-overlay{padding:10px}
   .modal-content{max-width:100%}
+  .user-badge{gap:4px;padding:4px 8px}
+  .user-avatar{width:24px;height:24px;font-size:11px}
+  .username-display{display:none}
+  .logout-btn{padding:4px 8px;font-size:14px}
+  .login-btn{font-size:11px;padding:6px 8px}
+  .comments-toggle{font-size:11px;padding:8px 10px}
+  .comment-form{padding:8px;gap:8px}
+  .comment-header{flex-direction:column;gap:4px}
+  .comment-item{padding:10px}
+  .comment-avatar{width:28px;height:28px;font-size:11px}
+  .comment-author{font-size:12px}
+  .comment-time{font-size:10px}
+  .comment-text{font-size:12px}
+  .auth-form{padding:16px;gap:12px}
+  .form-input{font-size:13px;padding:8px 10px}
 }
 
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Navbar from "./components/navbar";
 import Home from "./pages/Home";
 import ErrorBoundary from "./components/ErrorBoundary";
+import AuthModal from "./components/AuthModal";
 
 function App() {
   const [category, setCategory] = useState("general");
@@ -12,6 +13,17 @@ function App() {
     }
     return false;
   });
+
+  // User state
+  const [currentUser, setCurrentUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("currentUser");
+      return savedUser ? JSON.parse(savedUser) : null;
+    }
+    return null;
+  });
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // App-level controls moved here so Navbar can control them
   const [useNewest, setUseNewest] = useState(false);
@@ -30,6 +42,18 @@ function App() {
     localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
+  // Handle login
+  const handleLogin = (userData) => {
+    setCurrentUser(userData);
+    localStorage.setItem("currentUser", JSON.stringify(userData));
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("currentUser");
+  };
+
   return (
     <>
       <Navbar
@@ -42,6 +66,15 @@ function App() {
         setSearchTerm={setSearchTerm}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        onLoginClick={() => setShowAuthModal(true)}
+      />
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onLogin={handleLogin}
       />
 
       <ErrorBoundary>
@@ -51,6 +84,7 @@ function App() {
           useNewest={useNewest}
           refreshKey={refreshKey}
           searchTerm={searchTerm}
+          currentUser={currentUser}
         />
       </ErrorBoundary>
 

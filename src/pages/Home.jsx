@@ -3,12 +3,14 @@ import Loader from "../components/Loader";
 import BreakingNews from "../components/BreakingNews";
 import TrendingArticles from "../components/TrendingArticles";
 import ShareButtons from "../components/ShareButtons";
+import Comments from "../components/Comments";
 
 const Home = ({
   category = "general",
   country = "in",
   refreshKey = 0,
-  searchTerm = ""
+  searchTerm = "",
+  currentUser = null
 }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -200,6 +202,9 @@ const Home = ({
                     Read full article
                   </a>
                 </div>
+
+                {/* Comments Section */}
+                <Comments articleUrl={news.url} currentUser={currentUser} />
               </div>
             </article>
           );

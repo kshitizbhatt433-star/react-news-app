@@ -1,6 +1,6 @@
 import Collections from "./Collections";
 
-const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, searchTerm, setSearchTerm, darkMode, setDarkMode }) => {
+const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, searchTerm, setSearchTerm, darkMode, setDarkMode, currentUser, onLogout, onLoginClick }) => {
   return (
     <header className="navbar">
       <div className="nav-container nav-top">
@@ -8,7 +8,6 @@ const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, s
           <div className="logo-wrapper">
             <h1 className="logo">
               <span className="logo-text">⚡ HeadlineX ⚡</span>
-              <span className="logo-sticker">🔥</span>
             </h1>
             <p className="tagline">Breaking News at Speed of Light</p>
           </div>
@@ -40,6 +39,23 @@ const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, s
               <span>Newest</span>
             </label>
             <button className="refresh-btn header-refresh" onClick={onRefresh}>🔄</button>
+
+            {/* User Profile or Login */}
+            {currentUser ? (
+              <div className="user-profile">
+                <div className="user-badge">
+                  <span className="user-avatar">{currentUser.username[0].toUpperCase()}</span>
+                  <span className="username-display">{currentUser.username}</span>
+                </div>
+                <button className="logout-btn" onClick={onLogout} title="Logout">
+                  🚪
+                </button>
+              </div>
+            ) : (
+              <button className="login-btn" onClick={onLoginClick}>
+                👤 Login
+              </button>
+            )}
           </div>
         </div>
       </div>
