@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
+import BreakingNews from "../components/BreakingNews";
+import TrendingArticles from "../components/TrendingArticles";
+import ShareButtons from "../components/ShareButtons";
 
 const Home = ({
   category = "general",
@@ -13,6 +16,18 @@ const Home = ({
   const [apiError, setApiError] = useState(null);
   const [showScroll, setShowScroll] = useState(false);
   const [page, setPage] = useState(1);
+  const [bookmarks, setBookmarks] = useState(() => {
+    if (typeof window !== "undefined") {
+      return JSON.parse(localStorage.getItem("bookmarks") || "[]");
+    }
+    return [];
+  });
+  const [savedArticles, setSavedArticles] = useState(() => {
+    if (typeof window !== "undefined") {
+      return JSON.parse(localStorage.getItem("savedArticles") || "[]");
+    }
+    return [];
+  });
 
   // ✅ Fetch news via Netlify function
   const fetchNewsPage = async (pageNum = 1, append = false) => {
@@ -74,6 +89,35 @@ const Home = ({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // 🔹 Bookmark functionality
+  const toggleBookmark = (url) => {
+    setBookmarks((prev) => {
+      const updated = prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url];
+      localStorage.setItem("bookmarks", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  // 🔹 Save Article functionality
+  const toggleSave = (url) => {
+    setSavedArticles((prev) => {
+      const updated = prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url];
+      localStorage.setItem("savedArticles", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const isBookmarked = (url) => bookmarks.includes(url);
+  const isSaved = (url) => savedArticles.includes(url);
+
+  // 🔹 Calculate reading time
+  const getReadingTime = (text) => {
+    if (!text) return 0;
+    const wordsPerMinute = 200;
+    const words = text.split(/\s+/).length;
+    return Math.ceil(words / wordsPerMinute);
+  };
+
   if (loading) return <Loader />;
 
   if (apiError) {
@@ -102,10 +146,17 @@ const Home = ({
   // 🔹 Render
   return (
     <main>
+      {articles.length > 0 && <BreakingNews articles={filtered.slice(0, 3)} />}
+      {articles.length > 0 && <TrendingArticles articles={filtered.slice(0, 5)} />}
+
       <section className="news-container">
         {filtered.map((news, index) => {
           const published = news.publishedAt ? new Date(news.publishedAt) : null;
           const isNew = published ? (Date.now() - published.getTime()) < 1000 * 60 * 60 * 12 : false;
+          const newsUrl = news.url;
+          const bookmarked = isBookmarked(newsUrl);
+          const saved = isSaved(newsUrl);
+          const readingTime = getReadingTime(news.description || news.title);
 
           return (
             <article key={index} className="news-card">
@@ -124,11 +175,31 @@ const Home = ({
                 <div className="meta">
                   <span className="source">{news.source?.name || "Unknown"}</span>
                   <span className="date">{published ? published.toLocaleString() : ""}</span>
+                  <span className="reading-time">⏱️ {readingTime} min read</span>
                 </div>
 
-                <a className="read-more-btn" href={news.url} target="_blank" rel="noreferrer">
-                  Read full article
-                </a>
+                <div className="article-actions">
+                  <button
+                    className={`action-btn ${bookmarked ? "active" : ""}`}
+                    onClick={() => toggleBookmark(newsUrl)}
+                    title="Bookmark article"
+                    aria-label="Bookmark"
+                  >
+                    {bookmarked ? "🔖" : "📌"}
+                  </button>
+                  <button
+                    className={`action-btn ${saved ? "active" : ""}`}
+                    onClick={() => toggleSave(newsUrl)}
+                    title="Save article"
+                    aria-label="Save"
+                  >
+                    {saved ? "💾" : "💬"}
+                  </button>
+                  <ShareButtons title={news.title} url={news.url} />
+                  <a className="read-more-btn" href={news.url} target="_blank" rel="noreferrer">
+                    Read full article
+                  </a>
+                </div>
               </div>
             </article>
           );
@@ -161,6 +232,45 @@ const Home = ({
           </button>
         </div>
       )}
+
+      {/* 🔹 Category Section at Bottom */}
+      <section className="category-section">
+        <div className="category-container">
+          <h2 className="category-heading">📰 Explore News Categories</h2>
+          <div className="category-grid">
+            <div className="category-item" onClick={() => window.location.hash = "#global"}>
+              <div className="category-icon">🌍</div>
+              <h3>Global News</h3>
+              <p>Get worldwide headlines</p>
+            </div>
+            <div className="category-item" onClick={() => window.location.hash = "#india"}>
+              <div className="category-icon">🇮🇳</div>
+              <h3>India News</h3>
+              <p>Latest from India</p>
+            </div>
+            <div className="category-item" onClick={() => window.location.hash = "#general"}>
+              <div className="category-icon">📋</div>
+              <h3>General</h3>
+              <p>Top general stories</p>
+            </div>
+            <div className="category-item" onClick={() => window.location.hash = "#business"}>
+              <div className="category-icon">💼</div>
+              <h3>Business</h3>
+              <p>Business & Markets</p>
+            </div>
+            <div className="category-item" onClick={() => window.location.hash = "#tech"}>
+              <div className="category-icon">🧠</div>
+              <h3>Technology</h3>
+              <p>Tech innovations</p>
+            </div>
+            <div className="category-item" onClick={() => window.location.hash = "#sports"}>
+              <div className="category-icon">🏅</div>
+              <h3>Sports</h3>
+              <p>Sports updates</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {showScroll && (
         <button className="scroll-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Scroll to top">
