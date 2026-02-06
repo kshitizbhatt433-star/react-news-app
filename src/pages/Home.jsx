@@ -3,6 +3,7 @@ import Loader from "../components/Loader";
 import BreakingNews from "../components/BreakingNews";
 import TrendingArticles from "../components/TrendingArticles";
 import ShareButtons from "../components/ShareButtons";
+import { fetchNews } from "../services/newsApi";
 import Comments from "../components/Comments";
 
 const Home = ({
@@ -31,46 +32,18 @@ const Home = ({
     return [];
   });
 
-  // ✅ Fetch news via Netlify function
+  // ✅ Fetch news via GNews API (direct - works on GitHub Pages)
   const fetchNewsPage = async (pageNum = 1, append = false) => {
     pageNum === 1 ? setLoading(true) : setLoadingMore(true);
 
-    const params = new URLSearchParams({
-      country,
-      category,
-      page: pageNum,
-      q: searchTerm
-    });
-
     try {
-      // 🔹 Use full Netlify function path
-      const url = `/.netlify/functions/news?${params.toString()}`;
-      console.log("Fetching from:", url);
+      const newArticles = await fetchNews(country, category, pageNum, searchTerm);
       
-      const res = await fetch(url);
-      console.log("Response status:", res.status, "Content-Type:", res.headers.get("content-type"));
-      
-      const text = await res.text();
-      console.log("Raw response (first 200 chars):", text.substring(0, 200));
-      
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (parseErr) {
-        console.error("JSON parse failed. Response starts with:", text.substring(0, 100));
-        throw new Error("Invalid JSON response: " + parseErr.message);
-      }
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error || "Failed to fetch news");
-      }
-
-      const newArticles = data.articles || [];
       setApiError(null);
       setArticles((prev) => (append ? [...prev, ...newArticles] : newArticles));
     } catch (err) {
       console.error("News fetch failed:", err);
-      setApiError(err.message || "Network error");
+      setApiError(err.message || "Network error. Please check your API key.");
       if (pageNum === 1) setArticles([]);
     } finally {
       setLoading(false);
