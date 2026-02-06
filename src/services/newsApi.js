@@ -3,7 +3,7 @@
 // In development: calls GNews API directly
 
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const VERCEL_URL = "https://headline-x-vercel.vercel.app"; // Update this with your Vercel URL after deployment
+const VERCEL_URL = "https://react-news-c6w7wui8n-harrybhatts-projects.vercel.app";
 const IS_PRODUCTION = import.meta.env.MODE === "production";
 
 export const fetchNews = async (country = "in", category = "general", page = 1, searchTerm = "") => {
