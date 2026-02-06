@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "env": {
+    "GNEWS_API_KEY": "@gnews_api_key"
+  },
+  "functions": {
+    "api/news.js": {
+      "memory": 128,
+      "maxDuration": 30
+    }
+  }
+}
