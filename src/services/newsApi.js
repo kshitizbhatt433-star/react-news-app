@@ -25,14 +25,27 @@ export const fetchNews = async (country = "in", category = "general", page = 1, 
 
     console.log("Fetching from:", endpoint);
 
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      credentials: "omit",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
     const data = await response.json();
 
-    if (!response.ok || data.error) {
-      throw new Error(data.error || `API Error: ${response.status}`);
+    if (data.error) {
+      throw new Error(data.error);
     }
 
     const articles = data.articles || [];
+    console.log(`Successfully fetched ${articles.length} articles`);
     return articles;
   } catch (error) {
     console.error("News API Error:", error);

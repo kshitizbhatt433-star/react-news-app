@@ -2,7 +2,23 @@
 // This keeps your API key secure on the backend
 // Your GitHub Pages app calls this Vercel function instead
 
+// Handle CORS for all requests
+const setCorsHeaders = (res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Content-Type", "application/json");
+};
+
 export default async function handler(req, res) {
+  // Set CORS headers for all requests
+  setCorsHeaders(res);
+
+  // Handle preflight OPTIONS request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   // Only allow GET requests
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -61,11 +77,6 @@ export default async function handler(req, res) {
       publishedAt: article.publishedAt,
       urlToImage: article.image,
     }));
-
-    // Add CORS headers for GitHub Pages
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-    res.setHeader("Content-Type", "application/json");
 
     return res.status(200).json({
       success: true,
