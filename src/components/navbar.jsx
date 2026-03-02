@@ -1,24 +1,74 @@
+import { useState } from "react";
 import Collections from "./Collections";
 
-const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, searchTerm, setSearchTerm, darkMode, setDarkMode, currentUser, onLogout, onLoginClick }) => {
+const CATEGORIES = [
+  { label: "General", value: "general", emoji: "📰" },
+  { label: "Business", value: "business", emoji: "💼" },
+  { label: "Technology", value: "technology", emoji: "🧠" },
+  { label: "Sports", value: "sports", emoji: "🏅" },
+  { label: "Health", value: "health", emoji: "🩺" },
+  { label: "Entertainment", value: "entertainment", emoji: "🎬" },
+  { label: "Science", value: "science", emoji: "🔬" },
+];
+
+const COUNTRIES = [
+  { label: "Global", value: "us", emoji: "🌍" },
+  { label: "India", value: "in", emoji: "🇮🇳" },
+  { label: "UK", value: "gb", emoji: "🇬🇧" },
+  { label: "Australia", value: "au", emoji: "🇦🇺" },
+];
+
+const Navbar = ({
+  setCategory,
+  setCountry,
+  useNewest,
+  setUseNewest,
+  onRefresh,
+  searchTerm,
+  setSearchTerm,
+  darkMode,
+  setDarkMode,
+  currentUser,
+  onLogout,
+  onLoginClick,
+  activeCategory,
+  activeCountry,
+}) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleCategory = (val) => {
+    setCategory(val);
+    setMenuOpen(false);
+  };
+
+  const handleCountry = (val) => {
+    setCountry(val);
+    setMenuOpen(false);
+  };
+
   return (
     <header className="navbar">
+      {/* Top Row: Brand + Controls */}
       <div className="nav-container nav-top">
+        {/* Brand */}
         <div className="brand center-brand">
           <div className="logo-wrapper">
             <h1 className="logo">
-              <span className="logo-text">⚡ HeadlineX ⚡</span>
+              <span className="logo-text">⚡ HeadlineX</span>
+              <span className="logo-sticker">⚡</span>
             </h1>
             <p className="tagline">Breaking News at Speed of Light</p>
           </div>
         </div>
 
+        {/* Controls */}
         <div className="header-controls">
+          {/* Search */}
           <div className="search-wrap">
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search headlines..."
+              placeholder="🔍  Search headlines..."
               className="search-input"
               aria-label="Search news"
             />
@@ -26,25 +76,44 @@ const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, s
 
           <div className="right-controls">
             <Collections />
-            <button 
-              className="theme-toggle" 
+
+            {/* Newest toggle */}
+            <label className="small-switch" title="Sort by newest">
+              <input
+                type="checkbox"
+                checked={useNewest}
+                onChange={(e) => setUseNewest(e.target.checked)}
+              />
+              <span>Newest</span>
+            </label>
+
+            {/* Refresh */}
+            <button
+              className="refresh-btn header-refresh"
+              onClick={onRefresh}
+              title="Refresh news"
+              aria-label="Refresh"
+            >
+              🔄
+            </button>
+
+            {/* Dark mode */}
+            <button
+              className="theme-toggle"
               onClick={() => setDarkMode(!darkMode)}
-              title={darkMode ? "Light mode" : "Dark mode"}
+              title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               aria-label="Toggle dark mode"
             >
               {darkMode ? "☀️" : "🌙"}
             </button>
-            <label className="small-switch">
-              <input type="checkbox" checked={useNewest} onChange={(e) => setUseNewest(e.target.checked)} />
-              <span>Newest</span>
-            </label>
-            <button className="refresh-btn header-refresh" onClick={onRefresh}>🔄</button>
 
-            {/* User Profile or Login */}
+            {/* User */}
             {currentUser ? (
               <div className="user-profile">
                 <div className="user-badge">
-                  <span className="user-avatar">{currentUser.username[0].toUpperCase()}</span>
+                  <span className="user-avatar">
+                    {currentUser.username[0].toUpperCase()}
+                  </span>
                   <span className="username-display">{currentUser.username}</span>
                 </div>
                 <button className="logout-btn" onClick={onLogout} title="Logout">
@@ -56,18 +125,48 @@ const Navbar = ({ setCategory, setCountry, useNewest, setUseNewest, onRefresh, s
                 👤 Login
               </button>
             )}
+
+            {/* Mobile hamburger */}
+            <button
+              className="theme-toggle mobile-menu-btn"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+              style={{ display: "none" }}
+            >
+              {menuOpen ? "✕" : "☰"}
+            </button>
           </div>
         </div>
       </div>
 
-      <nav className="nav-container menu-row">
+      {/* Nav Menu */}
+      <nav className={`nav-container menu-row${menuOpen ? " menu-open" : ""}`}>
         <ul className="menu-list stretch">
-          <li onClick={() => setCountry("us")}>🌍 Global</li>
-          <li onClick={() => setCountry("in")}>🇮🇳 India</li>
-          <li onClick={() => setCategory("general")}>📰 General</li>
-          <li onClick={() => setCategory("business")}>💼 Business</li>
-          <li onClick={() => setCategory("technology")}>🧠 Tech</li>
-          <li onClick={() => setCategory("sports")}>🏅 Sports</li>
+          {/* Countries */}
+          {COUNTRIES.map((c) => (
+            <li
+              key={c.value}
+              onClick={() => handleCountry(c.value)}
+              className={activeCountry === c.value ? "menu-active" : ""}
+              title={`News from ${c.label}`}
+            >
+              {c.emoji} {c.label}
+            </li>
+          ))}
+
+          {/* Divider */}
+          <li className="menu-divider" aria-hidden="true">|</li>
+
+          {/* Categories */}
+          {CATEGORIES.map((cat) => (
+            <li
+              key={cat.value}
+              onClick={() => handleCategory(cat.value)}
+              className={activeCategory === cat.value ? "menu-active" : ""}
+            >
+              {cat.emoji} {cat.label}
+            </li>
+          ))}
         </ul>
       </nav>
     </header>
