@@ -1,36 +1,29 @@
 import { useState } from "react";
-import Collections from "./Collections";
 
 const CATEGORIES = [
-  { label: "General", value: "general", emoji: "📰" },
-  { label: "Business", value: "business", emoji: "💼" },
-  { label: "Technology", value: "technology", emoji: "🧠" },
-  { label: "Sports", value: "sports", emoji: "🏅" },
-  { label: "Health", value: "health", emoji: "🩺" },
-  { label: "Entertainment", value: "entertainment", emoji: "🎬" },
-  { label: "Science", value: "science", emoji: "🔬" },
+  { label: "Intelligence", value: "general", emoji: "🕵️" },
+  { label: "Live News", value: "youtube", emoji: "🔴" },
+  { label: "Security", value: "business", emoji: "🔒" },
+  { label: "Investigations", value: "entertainment", emoji: "🔍" },
+  { label: "Analysis", value: "science", emoji: "📊" },
+  { label: "Cyber Intel", value: "darkweb", emoji: "💻" },
+  { label: "Social Media", value: "social", emoji: "📱" },
+  { label: "Data Leaks", value: "leaks", emoji: "💀" },
+  { label: "Reddit OSINT", value: "reddit", emoji: "🤖" },
+  { label: "RSS Feeds", value: "rss", emoji: "📡" },
 ];
 
 const COUNTRIES = [
-  { label: "Global", value: "us", emoji: "🌍" },
   { label: "India", value: "in", emoji: "🇮🇳" },
-  { label: "UK", value: "gb", emoji: "🇬🇧" },
-  { label: "Australia", value: "au", emoji: "🇦🇺" },
 ];
 
 const Navbar = ({
   setCategory,
   setCountry,
-  useNewest,
-  setUseNewest,
-  onRefresh,
   searchTerm,
   setSearchTerm,
   darkMode,
   setDarkMode,
-  currentUser,
-  onLogout,
-  onLoginClick,
   activeCategory,
   activeCountry,
 }) => {
@@ -54,10 +47,10 @@ const Navbar = ({
         <div className="brand center-brand">
           <div className="logo-wrapper">
             <h1 className="logo">
-              <span className="logo-text">⚡ HeadlineX</span>
-              <span className="logo-sticker">⚡</span>
+              <span className="logo-text">🕵️ OSINT India</span>
+              <span className="logo-sticker">🕵️</span>
             </h1>
-            <p className="tagline">Breaking News at Speed of Light</p>
+            <p className="tagline">Intelligence & News Analysis</p>
           </div>
         </div>
 
@@ -68,34 +61,44 @@ const Navbar = ({
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="🔍  Search headlines..."
+              placeholder="🔍  Search intelligence reports..."
               className="search-input"
-              aria-label="Search news"
+              aria-label="Search intelligence"
             />
           </div>
 
           <div className="right-controls">
-            <Collections />
-
-            {/* Newest toggle */}
-            <label className="small-switch" title="Sort by newest">
-              <input
-                type="checkbox"
-                checked={useNewest}
-                onChange={(e) => setUseNewest(e.target.checked)}
-              />
-              <span>Newest</span>
-            </label>
-
-            {/* Refresh */}
-            <button
-              className="refresh-btn header-refresh"
-              onClick={onRefresh}
-              title="Refresh news"
-              aria-label="Refresh"
-            >
-              🔄
-            </button>
+            {/* OSINT Tools */}
+            <div className="osint-tools">
+              <button
+                className="tool-btn"
+                onClick={() => window.open('https://www.google.com/search?q=site:pastebin.com', '_blank')}
+                title="Pastebin Search"
+              >
+                📋
+              </button>
+              <button
+                className="tool-btn"
+                onClick={() => window.open('https://haveibeenpwned.com/', '_blank')}
+                title="Have I Been Pwned"
+              >
+                🔐
+              </button>
+              <button
+                className="tool-btn"
+                onClick={() => window.open('https://www.shodan.io/', '_blank')}
+                title="Shodan Search"
+              >
+                🌐
+              </button>
+              <button
+                className="tool-btn"
+                onClick={() => window.open('https://www.maltego.com/', '_blank')}
+                title="Maltego"
+              >
+                🕸️
+              </button>
+            </div>
 
             {/* Dark mode */}
             <button
@@ -106,25 +109,6 @@ const Navbar = ({
             >
               {darkMode ? "☀️" : "🌙"}
             </button>
-
-            {/* User */}
-            {currentUser ? (
-              <div className="user-profile">
-                <div className="user-badge">
-                  <span className="user-avatar">
-                    {currentUser.username[0].toUpperCase()}
-                  </span>
-                  <span className="username-display">{currentUser.username}</span>
-                </div>
-                <button className="logout-btn" onClick={onLogout} title="Logout">
-                  🚪
-                </button>
-              </div>
-            ) : (
-              <button className="login-btn" onClick={onLoginClick}>
-                👤 Login
-              </button>
-            )}
 
             {/* Mobile hamburger */}
             <button

@@ -1,20 +1,20 @@
 import { useEffect, useState, useCallback } from "react";
 import Loader from "../components/Loader";
-import BreakingNews from "../components/BreakingNews";
-import TrendingArticles from "../components/TrendingArticles";
 import ShareButtons from "../components/ShareButtons";
-import { fetchNews } from "../services/newsApi";
-import Comments from "../components/Comments";
+import LiveNewsTicker from "../components/LiveNewsTicker";
+import { fetchNews, fetchYouTubeVideos, fetchRedditPosts, fetchAllRSSByCategory } from "../services/newsApi";
 
 const CATEGORIES = [
-  { emoji: "🌍", label: "Global News",   desc: "Worldwide headlines",  cat: "general",       country: "us" },
-  { emoji: "🇮🇳", label: "India News",    desc: "Latest from India",    cat: "general",       country: "in" },
-  { emoji: "💼", label: "Business",      desc: "Markets & Finance",    cat: "business",      country: null },
-  { emoji: "🧠", label: "Technology",    desc: "Tech innovations",     cat: "technology",    country: null },
-  { emoji: "🏅", label: "Sports",        desc: "Match & game updates", cat: "sports",        country: null },
-  { emoji: "🎬", label: "Entertainment", desc: "Movies & culture",     cat: "entertainment", country: null },
-  { emoji: "🩺", label: "Health",        desc: "Wellness & medicine",  cat: "health",        country: null },
-  { emoji: "🔬", label: "Science",       desc: "Discoveries & space",  cat: "science",       country: null },
+  { emoji: "🕵️", label: "Intelligence", desc: "General OSINT reports", cat: "general", country: "in" },
+  { emoji: "🔴", label: "Live News", desc: "Live streaming channels", cat: "youtube", country: null },
+  { emoji: "🔒", label: "Security", desc: "Cybersecurity & threats", cat: "business", country: null },
+  { emoji: "🔍", label: "Investigations", desc: "Deep dive analysis", cat: "entertainment", country: null },
+  { emoji: "📊", label: "Analysis", desc: "Data & trend analysis", cat: "science", country: null },
+  { emoji: "💻", label: "Cyber Intel", desc: "Digital intelligence", cat: "darkweb", country: null },
+  { emoji: "📱", label: "Social Media", desc: "Social network OSINT", cat: "social", country: null },
+  { emoji: "💀", label: "Data Leaks", desc: "Breach intelligence", cat: "leaks", country: null },
+  { emoji: "🤖", label: "Reddit OSINT", desc: "Community intelligence", cat: "reddit", country: null },
+  { emoji: "📡", label: "RSS Feeds", desc: "Direct source feeds", cat: "rss", country: null },
 ];
 
 function getTimeAgo(dateStr) {
@@ -40,9 +40,6 @@ const Home = ({
   country = "in",
   refreshKey = 0,
   searchTerm = "",
-  currentUser = null,
-  onCategoryChange,
-  onCountryChange,
 }) => {
   const [articles, setArticles]       = useState([]);
   const [loading, setLoading]         = useState(true);
@@ -57,11 +54,42 @@ const Home = ({
   const [savedArticles, setSavedArticles] = useState(() =>
     JSON.parse(localStorage.getItem("savedArticles") || "[]")
   );
+  const [selectedState, setSelectedState] = useState(null);
 
   const fetchNewsPage = useCallback(async (pageNum = 1, append = false) => {
     pageNum === 1 ? setLoading(true) : setLoadingMore(true);
     try {
-      const newArticles = await fetchNews(country, category, pageNum, searchTerm);
+      let newArticles;
+      let searchQuery = searchTerm;
+      if (selectedState) {
+        searchQuery = searchQuery ? `${searchQuery} ${selectedState}` : selectedState;
+      }
+
+      if (category === "youtube") {
+        newArticles = await fetchYouTubeVideos("all", "live");
+        // Transform YouTube videos to match article schema
+        newArticles = newArticles.map(video => ({
+          title: video.title,
+          description: video.description?.substring(0, 200) || "",
+          image: video.thumbnail,
+          url: video.url,
+          source: { name: `${video.channel} (YouTube Live)` },
+          publishedAt: video.publishedAt,
+          urlToImage: video.thumbnail,
+          isYouTube: true,
+          liveBroadcastContent: video.liveBroadcastContent
+        }));
+      } else if (category === "reddit") {
+        // OSINT: Reddit intelligence
+        newArticles = await fetchRedditPosts("india", "hot", 20);
+      } else if (category === "rss") {
+        // OSINT: RSS feed intelligence
+        newArticles = await fetchAllRSSByCategory("general");
+      } else {
+        // Default: regular news categories
+        newArticles = await fetchNews(country, category, pageNum, searchTerm);
+      }
+
       setApiError(null);
       setArticles((prev) => append ? [...prev, ...newArticles] : newArticles);
       setHasMore(newArticles.length > 0);
@@ -72,7 +100,7 @@ const Home = ({
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [country, category, searchTerm]);
+  }, [country, category, searchTerm, selectedState]);
 
   useEffect(() => {
     setPage(1);
@@ -139,17 +167,24 @@ const Home = ({
 
   return (
     <main>
-      {/* Breaking + Trending */}
-      {filtered.length > 0 && <BreakingNews articles={filtered.slice(0, 3)} />}
-      {filtered.length > 0 && <TrendingArticles articles={filtered.slice(0, 5)} />}
+      {/* Live News Ticker */}
+      <LiveNewsTicker />
 
       {/* Section header */}
       <div className="news-toolbar">
         <div className="toolbar-left">
           <h2>
-            {category.charAt(0).toUpperCase() + category.slice(1)} News
+            {category === "general" ? "Intelligence Feed" :
+             category === "youtube" ? "Live News Streams" :
+             category === "business" ? "Security Intelligence" :
+             category === "entertainment" ? "Investigative Reports" :
+             category === "science" ? "Technical Analysis" :
+             category === "darkweb" ? "Dark Web Intelligence" :
+             category === "social" ? "Social Media OSINT" :
+             category === "leaks" ? "Data Breach Reports" :             category === "reddit" ? "Reddit OSINT Feed" :
+             category === "rss" ? "RSS Intelligence Feeds" :             category.charAt(0).toUpperCase() + category.slice(1) + " Intelligence"}
           </h2>
-          <p className="toolbar-sub">{filtered.length} articles found</p>
+          <p className="toolbar-sub">{filtered.length} intelligence reports found</p>
         </div>
       </div>
 
@@ -224,9 +259,6 @@ const Home = ({
 
                   <ShareButtons title={news.title} url={newsUrl} />
                 </div>
-
-                {/* Comments */}
-                <Comments articleUrl={newsUrl} currentUser={currentUser} />
               </div>
             </article>
           );

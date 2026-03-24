@@ -1,9 +1,9 @@
 {
-  "name": "news-app",
+  "name": "osint-india",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://kshitizbhatt433-star.github.io/react-news-app/",
+  "homepage": "https://kshitizbhatt433-star.github.io/osint-india/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,8 +12,11 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "d3-geo": "^3.1.1",
+    "prop-types": "^15.8.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-simple-maps": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

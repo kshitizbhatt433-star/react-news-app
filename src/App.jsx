@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "./components/navbar";
 import Home from "./pages/Home";
 import ErrorBoundary from "./components/ErrorBoundary";
-import AuthModal from "./components/AuthModal";
 
 /* ── Scroll-to-top button ── */
 function ScrollTop() {
@@ -53,7 +52,6 @@ function PageFade({ children, id }) {
 function App() {
   const [category, setCategory]   = useState("general");
   const [country, setCountry]     = useState("in");
-  const [useNewest, setUseNewest] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
   const [toast, setToast]         = useState(null);
@@ -68,15 +66,6 @@ function App() {
     return false;
   });
 
-  const [currentUser, setCurrentUser] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("currentUser");
-      return saved ? JSON.parse(saved) : null;
-    }
-    return null;
-  });
-
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const prevCategory = useRef(category);
   const prevCountry  = useRef(country);
 
@@ -96,11 +85,6 @@ function App() {
   }, [category, country]);
 
   /* Handlers */
-  const handleRefresh = () => {
-    setRefreshKey((k) => k + 1);
-    setToast("🔄 Feed refreshed");
-  };
-
   const handleCategoryChange = (val) => {
     setCategory(val);
     setToast(`📰 Switched to ${val.charAt(0).toUpperCase() + val.slice(1)}`);
@@ -108,22 +92,7 @@ function App() {
 
   const handleCountryChange = (val) => {
     setCountry(val);
-    const names = { us: "Global", in: "India", gb: "UK", au: "Australia" };
-    setToast(`🌍 Showing news from ${names[val] || val.toUpperCase()}`);
-  };
-
-  const handleLogin = (userData) => {
-    setCurrentUser(userData);
-    localStorage.setItem("currentUser", JSON.stringify(userData));
-    setShowAuthModal(false);
-    setToast(`👋 Welcome back, ${userData.username}!`);
-  };
-
-  const handleLogout = () => {
-    const name = currentUser?.username;
-    setCurrentUser(null);
-    localStorage.removeItem("currentUser");
-    setToast(`👋 Goodbye, ${name}!`);
+    setToast(`🇮🇳 Showing news from India`);
   };
 
   const currentYear = new Date().getFullYear();
@@ -133,24 +102,12 @@ function App() {
       <Navbar
         setCategory={handleCategoryChange}
         setCountry={handleCountryChange}
-        useNewest={useNewest}
-        setUseNewest={setUseNewest}
-        onRefresh={handleRefresh}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-        onLoginClick={() => setShowAuthModal(true)}
         activeCategory={category}
         activeCountry={country}
-      />
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onLogin={handleLogin}
       />
 
       <ErrorBoundary>
@@ -158,17 +115,15 @@ function App() {
           <Home
             category={category}
             country={country}
-            useNewest={useNewest}
             refreshKey={refreshKey}
             searchTerm={searchTerm}
-            currentUser={currentUser}
           />
         </PageFade>
       </ErrorBoundary>
 
       <footer className="site-footer">
         <div className="footer-inner">
-          <span>© {currentYear} <strong>HeadlineX</strong> — Breaking News at Speed of Light ⚡</span>
+          <span>© {currentYear} <strong>OSINT India</strong> — Open Source Intelligence Platform 🕵️</span>
           <span>Powered by <a href="https://newsapi.org" target="_blank" rel="noreferrer" className="footer-link">NewsAPI.org</a></span>
         </div>
       </footer>

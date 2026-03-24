@@ -5,6 +5,14 @@
     "api/news.js": {
       "memory": 128,
       "maxDuration": 30
+    },
+    "api/reddit.js": {
+      "memory": 128,
+      "maxDuration": 30
+    },
+    "api/rss.js": {
+      "memory": 128,
+      "maxDuration": 30
     }
   }
 }
