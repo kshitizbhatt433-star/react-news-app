@@ -12,10 +12,21 @@ export const fetchNews = async (country = "in", category = "general", page = 1, 
   try {
     let query = searchTerm;
     if (!query) {
-      if (category === "general") {
-        query = country === "in" ? "india news" : "world news";
-      } else {
-        query = `${category} ${country === "in" ? "india" : ""}`.trim();
+      switch (category) {
+        case "general":
+          query = country === "in" ? "india news" : "world news";
+          break;
+        case "india":
+          query = "india news";
+          break;
+        case "world":
+          query = "world news";
+          break;
+        case "bollywood":
+          query = country === "in" ? "bollywood india" : "bollywood";
+          break;
+        default:
+          query = `${category}${country === "in" ? " india" : ""}`.trim();
       }
     }
 

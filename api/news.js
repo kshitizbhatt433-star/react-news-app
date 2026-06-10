@@ -1,92 +1,86 @@
-// Vercel Serverless Function - News API Proxy
-// This keeps your API key secure on the backend
-// Your GitHub Pages app calls this Vercel function instead
+import { setCorsHeaders, dedupeAndSortArticles } from "./news-utils.js";
+import { fetchNewsDataArticles } from "./newsdata.js";
+import { fetchGNewsArticles } from "./gnews.js";
+import { fetchTheNewsApiArticles } from "./thenewsapi.js";
 
-// Handle CORS for all requests
-const setCorsHeaders = (res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Content-Type", "application/json");
-};
+const CACHE_TTL = 1000 * 60 * 1;
+const CACHE = new Map();
+
+const createCacheKey = ({ category, country, q, page }) => `${category}|${country}|${q}|${page}`;
 
 export default async function handler(req, res) {
-  // Set CORS headers for all requests
   setCorsHeaders(res);
 
-  // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
-
-  // Only allow GET requests
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { q, page = "1", category = "general", country = "in" } = req.query;
-    const API_KEY = process.env.GNEWS_API_KEY;
+    const { category = "general", country = "in", q = "", page = "1" } = req.query;
+    const cacheKey = createCacheKey({ category, country, q, page });
+    const cached = CACHE.get(cacheKey);
 
-    if (!API_KEY) {
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return res.status(200).json(cached.value);
+    }
+
+    const sources = [];
+    if (process.env.NEWSDATA_API_KEY) {
+      sources.push({ name: "NewsData.io", fetcher: fetchNewsDataArticles });
+    }
+    if (process.env.NEWS_API_KEY) {
+      sources.push({ name: "GNews", fetcher: fetchGNewsArticles });
+    }
+    if (process.env.THENEWSAPI_KEY) {
+      sources.push({ name: "TheNewsAPI", fetcher: fetchTheNewsApiArticles });
+    }
+
+    if (!sources.length) {
       return res.status(500).json({
-        error: "API key not configured on server. Contact admin.",
+        error: "No news API keys are configured. Please add NEWS_API_KEY, NEWSDATA_API_KEY, or THENEWSAPI_KEY.",
       });
     }
 
-    // Build query
-    let query = q;
-    if (!query) {
-      if (category === "general") {
-        query = country === "in" ? "india news" : "world news";
+    const settled = await Promise.allSettled(
+      sources.map((source) =>
+        source.fetcher({ category, country, searchTerm: q, page: Number(page) })
+      )
+    );
+
+    const errors = [];
+    const articles = [];
+
+    settled.forEach((result, index) => {
+      const sourceName = sources[index].name;
+      if (result.status === "fulfilled") {
+        articles.push(...result.value);
       } else {
-        query = `${category} ${country === "in" ? "india" : ""}`.trim();
+        errors.push(`${sourceName} failed: ${result.reason?.message || "Unknown error"}`);
       }
-    }
-
-    const params = new URLSearchParams({
-      q: query,
-      lang: "en",
-      max: 20,
-      page: page,
-      token: API_KEY,
     });
 
-    const newsUrl = `https://gnews.io/api/v4/search?${params.toString()}`;
-    console.log("Fetching from GNews API:", query);
-
-    const response = await fetch(newsUrl);
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("GNews API error:", data);
-      return res.status(response.status).json({
-        error: data.error || "Failed to fetch from News API",
+    if (!articles.length) {
+      return res.status(500).json({
+        error: "Unable to load news from the configured sources.",
+        details: errors,
       });
     }
 
-    // Transform response
-    const articles = (data.articles || []).map((article) => ({
-      title: article.title,
-      description: article.description,
-      image: article.image,
-      url: article.url,
-      source: {
-        name: article.source?.name || "Unknown",
-      },
-      publishedAt: article.publishedAt,
-      urlToImage: article.image,
-    }));
-
-    return res.status(200).json({
+    const merged = dedupeAndSortArticles(articles);
+    const payload = {
       success: true,
-      articles: articles,
-      totalArticles: data.totalArticles || articles.length,
-    });
+      articles: merged,
+      sourceCount: merged.length,
+      errors,
+    };
+
+    CACHE.set(cacheKey, { ts: Date.now(), value: payload });
+    return res.status(200).json(payload);
   } catch (error) {
-    console.error("API Proxy Error:", error);
-    return res.status(500).json({
-      error: "Internal server error: " + error.message,
-    });
+    console.error("News aggregator error:", error);
+    return res.status(500).json({ error: "Internal server error while fetching news.", details: error.message });
   }
 }

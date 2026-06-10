@@ -1,13 +1,13 @@
-# OSINT India
+# HeadlineX
 
-An advanced open-source intelligence platform for news analysis, live updates, and investigative journalism focused on India and global events.
+A professional news platform delivering breaking headlines, trending stories, and authoritative coverage from India and around the world.
 
 ## Features
 
 - Live news from YouTube channels (Aaj Tak, BBC India, etc.)
 - News aggregation from Reddit, RSS feeds, and GNews
 - Interactive India map for regional news
-- OSINT tools: keyword tracking, source analysis, data visualization
+- News discovery tools: bookmarks, search, and curated topic navigation
 - Detective-themed interface with dark mode
 - Real-time search and filtering
 - Social sharing and bookmarking

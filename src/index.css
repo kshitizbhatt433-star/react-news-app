@@ -4,39 +4,39 @@
    ROOT — DETECTIVE THEME (LIGHT MODE)
 ═══════════════════════════════════════════ */
 :root {
-  --bg-1: #1a1a1a;
-  --bg-2: #2a2a2a;
-  --card-bg: #333333;
-  --muted: #888888;
-  --accent: #ff4444;
-  --accent-2: #ffaa00;
-  --accent-rgb: 255, 68, 68;
-  --glass: rgba(255, 68, 68, 0.06);
-  --glass-border: rgba(255, 68, 68, 0.12);
-  --text: #ffffff;
-  --text-soft: #cccccc;
-  --shadow-sm: 0 2px 8px rgba(255,68,68,0.08);
-  --shadow-md: 0 8px 28px rgba(255,68,68,0.12);
-  --shadow-lg: 0 20px 50px rgba(255,68,68,0.16);
-  --radius: 14px;
-  --radius-sm: 8px;
+  --bg-1: #f4f7fb;
+  --bg-2: #ffffff;
+  --card-bg: #ffffff;
+  --muted: #64748b;
+  --accent: #1d4ed8;
+  --accent-2: #3b82f6;
+  --accent-rgb: 29, 78, 216;
+  --glass: rgba(59, 130, 246, 0.08);
+  --glass-border: rgba(96, 165, 250, 0.16);
+  --text: #0f172a;
+  --text-soft: #475569;
+  --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 18px 40px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 24px 70px rgba(15, 23, 42, 0.14);
+  --radius: 18px;
+  --radius-sm: 12px;
 }
 
 /* ═══════════════════════════════════════════
-   DARK MODE (EVEN DARKER)
+   DARK MODE
 ═══════════════════════════════════════════ */
 html.dark-mode {
-  --bg-1: #0a0a0a;
-  --bg-2: #1a1a1a;
-  --card-bg: #222222;
-  --muted: #666666;
-  --glass: rgba(255, 68, 68, 0.1);
-  --glass-border: rgba(255, 68, 68, 0.2);
-  --text: #ffffff;
-  --text-soft: #aaaaaa;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
-  --shadow-md: 0 8px 28px rgba(0,0,0,0.6);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,0.7);
+  --bg-1: #050816;
+  --bg-2: #0c1226;
+  --card-bg: #111b36;
+  --muted: #94a3b8;
+  --glass: rgba(59, 130, 246, 0.12);
+  --glass-border: rgba(148, 163, 184, 0.16);
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 18px 40px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.65);
 }
 
 /* ═══════════════════════════════════════════
@@ -49,8 +49,8 @@ body {
   -webkit-font-smoothing: antialiased;
   background: var(--bg-1);
   background-image:
-    radial-gradient(ellipse 900px 500px at 80% 0%, rgba(108,71,255,0.08), transparent),
-    radial-gradient(ellipse 600px 400px at 0% 100%, rgba(245,166,35,0.07), transparent);
+    radial-gradient(circle at 20% 10%, rgba(59, 130, 246, 0.08), transparent 28%),
+    radial-gradient(circle at 85% 0%, rgba(59, 130, 246, 0.04), transparent 25%);
   color: var(--text);
   min-height: 100vh;
   transition: background 0.35s ease, color 0.35s ease;
@@ -201,8 +201,6 @@ html.dark-mode .navbar { background: rgba(13, 11, 26, 0.9); }
 .menu-list li.menu-active { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3); }
 .menu-list li.menu-divider { color: var(--muted); opacity: 0.3; cursor: default; padding: 8px 6px; pointer-events: none; border: none; }
 .menu-list li.menu-divider:hover { background: none; transform: none; color: var(--muted); }
-
-.osint-tools { display: flex; align-items: center; gap: 4px; }
 
 .tool-btn {
   background: var(--glass);
@@ -494,6 +492,15 @@ html.dark-mode .navbar { background: rgba(13, 11, 26, 0.9); }
 .bar-4 { height: 35px; animation-delay: 0.45s; }
 .bar-5 { height: 20px; animation-delay: 0.6s;  }
 .loader-text { color: var(--muted); font-size: 14px; font-weight: 500; letter-spacing: 0.03em; }
+.skeleton-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; width: 100%; max-width: 1120px; }
+.skeleton-card { display: flex; flex-direction: column; gap: 12px; padding: 18px; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-sm); width: 100%; }
+.skeleton-image { height: 160px; border-radius: 16px; background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.02)); animation: pulse 1.2s ease-in-out infinite; }
+.skeleton-line { height: 12px; background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.03)); border-radius: 999px; animation: pulse 1.2s ease-in-out infinite; }
+.skeleton-line.short { width: 40%; }
+.skeleton-line.medium { width: 70%; }
+.skeleton-line.long { width: 100%; }
+.retry-btn { margin-top: 16px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; color: white; padding: 12px 22px; border-radius: 999px; cursor: pointer; font-weight: 700; transition: transform 0.2s ease, opacity 0.2s ease; }
+.retry-btn:hover { transform: translateY(-2px); opacity: 0.95; }
 
 /* ═══════════════════════════════════════════
    COLLECTIONS & MODAL

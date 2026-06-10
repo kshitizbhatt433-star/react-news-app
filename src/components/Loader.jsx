@@ -9,6 +9,16 @@ const Loader = () => {
         <div className="loader-bar bar-5" />
       </div>
       <p className="loader-text">Fetching the latest stories for you…</p>
+      <div className="skeleton-grid">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="skeleton-card">
+            <div className="skeleton-image" />
+            <div className="skeleton-line short" />
+            <div className="skeleton-line medium" />
+            <div className="skeleton-line long" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

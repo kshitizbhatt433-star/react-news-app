@@ -117,13 +117,15 @@ function App() {
             country={country}
             refreshKey={refreshKey}
             searchTerm={searchTerm}
+            onCategoryChange={handleCategoryChange}
+            onCountryChange={handleCountryChange}
           />
         </PageFade>
       </ErrorBoundary>
 
       <footer className="site-footer">
         <div className="footer-inner">
-          <span>© {currentYear} <strong>OSINT India</strong> — Open Source Intelligence Platform 🕵️</span>
+          <span>© {currentYear} <strong>HeadlineX</strong> — Trusted News Platform</span>
           <span>Powered by <a href="https://newsapi.org" target="_blank" rel="noreferrer" className="footer-link">NewsAPI.org</a></span>
         </div>
       </footer>

@@ -254,8 +254,8 @@ const IndiaMap = ({ onStateClick, selectedState }) => {
   try {
     return (
       <div className="india-map-container">
-        <h3 className="map-title">🗺️ OSINT India Intelligence Map</h3>
-        <p className="map-subtitle">Click on a state to filter intelligence reports</p>
+        <h3 className="map-title">🗺️ India News Map</h3>
+        <p className="map-subtitle">Click on a state to filter the latest headlines</p>
 
         <div className="map-wrapper">
           <ComposableMap
@@ -306,7 +306,7 @@ const IndiaMap = ({ onStateClick, selectedState }) => {
 
         {selectedState && (
           <div className="selected-state-info">
-            <p>Showing intelligence for: <strong>{selectedState}</strong></p>
+            <p>Showing news for: <strong>{selectedState}</strong></p>
           </div>
         )}
       </div>
@@ -315,13 +315,13 @@ const IndiaMap = ({ onStateClick, selectedState }) => {
     console.error("Map rendering error:", error);
     return (
       <div className="india-map-container">
-        <h3 className="map-title">🗺️ OSINT India Intelligence Map</h3>
-        <p className="map-subtitle">Interactive map temporarily unavailable</p>
+        <h3 className="map-title">🗺️ India News Map</h3>
+        <p className="map-subtitle">Interactive news map temporarily unavailable</p>
         <div className="map-wrapper" style={{ justifyContent: 'center', alignItems: 'center', color: 'var(--muted)' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
             <p>Map visualization loading...</p>
-            <p style={{ fontSize: '12px', marginTop: '8px' }}>Click state names to filter: {indiaGeoJson.features.map(f => f.properties.name).join(', ')}</p>
+            <p style={{ fontSize: '12px', marginTop: '8px' }}>Click state names to filter the latest headlines.</p>
           </div>
         </div>
       </div>

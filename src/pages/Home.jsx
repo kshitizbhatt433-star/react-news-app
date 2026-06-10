@@ -2,19 +2,20 @@ import { useEffect, useState, useCallback } from "react";
 import Loader from "../components/Loader";
 import ShareButtons from "../components/ShareButtons";
 import LiveNewsTicker from "../components/LiveNewsTicker";
-import { fetchNews, fetchYouTubeVideos, fetchRedditPosts, fetchAllRSSByCategory } from "../services/newsApi";
+import { fetchNews } from "../services/newsService";
 
 const CATEGORIES = [
-  { emoji: "🕵️", label: "Intelligence", desc: "General OSINT reports", cat: "general", country: "in" },
-  { emoji: "🔴", label: "Live News", desc: "Live streaming channels", cat: "youtube", country: null },
-  { emoji: "🔒", label: "Security", desc: "Cybersecurity & threats", cat: "business", country: null },
-  { emoji: "🔍", label: "Investigations", desc: "Deep dive analysis", cat: "entertainment", country: null },
-  { emoji: "📊", label: "Analysis", desc: "Data & trend analysis", cat: "science", country: null },
-  { emoji: "💻", label: "Cyber Intel", desc: "Digital intelligence", cat: "darkweb", country: null },
-  { emoji: "📱", label: "Social Media", desc: "Social network OSINT", cat: "social", country: null },
-  { emoji: "💀", label: "Data Leaks", desc: "Breach intelligence", cat: "leaks", country: null },
-  { emoji: "🤖", label: "Reddit OSINT", desc: "Community intelligence", cat: "reddit", country: null },
-  { emoji: "📡", label: "RSS Feeds", desc: "Direct source feeds", cat: "rss", country: null },
+  { emoji: "�", label: "Top Stories", desc: "The day’s most important headlines", cat: "general", country: "in" },
+  { emoji: "🇮🇳", label: "India", desc: "Local news from across India", cat: "india", country: "in" },
+  { emoji: "🌍", label: "World", desc: "Global headlines and breaking coverage", cat: "world", country: null },
+  { emoji: "🏛️", label: "Politics", desc: "Government, policy and elections", cat: "politics", country: null },
+  { emoji: "💼", label: "Business", desc: "Markets, economy and corporate news", cat: "business", country: null },
+  { emoji: "💡", label: "Technology", desc: "Innovation, gadgets and startups", cat: "technology", country: null },
+  { emoji: "🏏", label: "Sports", desc: "Match updates, scores and commentary", cat: "sports", country: null },
+  { emoji: "🎬", label: "Entertainment", desc: "Movies, TV and culture stories", cat: "entertainment", country: null },
+  { emoji: "🎥", label: "Bollywood", desc: "Cinema news and celebrity updates", cat: "bollywood", country: null },
+  { emoji: "🔬", label: "Science", desc: "Research, discoveries and innovation", cat: "science", country: null },
+  { emoji: "💊", label: "Health", desc: "Wellness, medicine and health trends", cat: "health", country: null },
 ];
 
 function getTimeAgo(dateStr) {
@@ -35,11 +36,30 @@ function isNewArticle(dateStr) {
   return (Date.now() - new Date(dateStr).getTime()) < 1000 * 60 * 60 * 12;
 }
 
+function getCategoryLabel(category) {
+  switch (category) {
+    case "general": return "Top Stories";
+    case "india": return "India News";
+    case "world": return "World News";
+    case "politics": return "Politics";
+    case "business": return "Business";
+    case "technology": return "Technology";
+    case "sports": return "Sports";
+    case "entertainment": return "Entertainment";
+    case "bollywood": return "Bollywood";
+    case "science": return "Science";
+    case "health": return "Health";
+    default: return category.charAt(0).toUpperCase() + category.slice(1);
+  }
+}
+
 const Home = ({
   category = "general",
   country = "in",
   refreshKey = 0,
   searchTerm = "",
+  onCategoryChange,
+  onCountryChange,
 }) => {
   const [articles, setArticles]       = useState([]);
   const [loading, setLoading]         = useState(true);
@@ -59,36 +79,12 @@ const Home = ({
   const fetchNewsPage = useCallback(async (pageNum = 1, append = false) => {
     pageNum === 1 ? setLoading(true) : setLoadingMore(true);
     try {
-      let newArticles;
       let searchQuery = searchTerm;
       if (selectedState) {
         searchQuery = searchQuery ? `${searchQuery} ${selectedState}` : selectedState;
       }
 
-      if (category === "youtube") {
-        newArticles = await fetchYouTubeVideos("all", "live");
-        // Transform YouTube videos to match article schema
-        newArticles = newArticles.map(video => ({
-          title: video.title,
-          description: video.description?.substring(0, 200) || "",
-          image: video.thumbnail,
-          url: video.url,
-          source: { name: `${video.channel} (YouTube Live)` },
-          publishedAt: video.publishedAt,
-          urlToImage: video.thumbnail,
-          isYouTube: true,
-          liveBroadcastContent: video.liveBroadcastContent
-        }));
-      } else if (category === "reddit") {
-        // OSINT: Reddit intelligence
-        newArticles = await fetchRedditPosts("india", "hot", 20);
-      } else if (category === "rss") {
-        // OSINT: RSS feed intelligence
-        newArticles = await fetchAllRSSByCategory("general");
-      } else {
-        // Default: regular news categories
-        newArticles = await fetchNews(country, category, pageNum, searchTerm);
-      }
+      const newArticles = await fetchNews(category, country, pageNum, searchQuery);
 
       setApiError(null);
       setArticles((prev) => append ? [...prev, ...newArticles] : newArticles);
@@ -143,6 +139,9 @@ const Home = ({
         <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
         <h2 style={{ marginBottom: 8 }}>Unable to load news</h2>
         <p style={{ color: "var(--muted)", maxWidth: 400, margin: "0 auto" }}>{apiError}</p>
+        <button className="retry-btn" onClick={() => fetchNewsPage(1, false)}>
+          Retry fetching headlines
+        </button>
       </div>
     );
   }
@@ -165,30 +164,56 @@ const Home = ({
 
   const fallback = "https://placehold.co/800x450/f0eeff/6c47ff?text=HeadlineX";
 
+  const heroArticle = filtered[0];
+  const trendingArticles = filtered.slice(1, 5);
+
   return (
     <main>
-      {/* Live News Ticker */}
       <LiveNewsTicker />
 
-      {/* Section header */}
+      <section className="breaking-news">
+        <div className="breaking-badge"><span className="breaking-dot"></span>Breaking News</div>
+        <div className="breaking-content">
+          <h3>{heroArticle?.title || "Stay informed with the latest headlines"}</h3>
+          <p className="description">{heroArticle?.description || "Explore the most important stories from India and around the world, curated for a fast-moving news cycle."}</p>
+          {heroArticle?.url && (
+            <a className="breaking-link" href={heroArticle.url} target="_blank" rel="noreferrer">
+              Read the full story →
+            </a>
+          )}
+        </div>
+      </section>
+
+      {trendingArticles.length > 0 && (
+        <section className="trending-section">
+          <div className="trending-title">⚡ Trending Now</div>
+          <div className="trending-items">
+            {trendingArticles.map((news, index) => (
+              <a
+                key={news.url || index}
+                href={news.url}
+                target="_blank"
+                rel="noreferrer"
+                className="trending-item"
+              >
+                <span className="trending-num">{index + 1}</span>
+                <div className="trending-info">
+                  <h4>{news.title}</h4>
+                  <span className="trending-source">{news.source?.name || "HeadlineX"}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="news-toolbar">
         <div className="toolbar-left">
-          <h2>
-            {category === "general" ? "Intelligence Feed" :
-             category === "youtube" ? "Live News Streams" :
-             category === "business" ? "Security Intelligence" :
-             category === "entertainment" ? "Investigative Reports" :
-             category === "science" ? "Technical Analysis" :
-             category === "darkweb" ? "Dark Web Intelligence" :
-             category === "social" ? "Social Media OSINT" :
-             category === "leaks" ? "Data Breach Reports" :             category === "reddit" ? "Reddit OSINT Feed" :
-             category === "rss" ? "RSS Intelligence Feeds" :             category.charAt(0).toUpperCase() + category.slice(1) + " Intelligence"}
-          </h2>
-          <p className="toolbar-sub">{filtered.length} intelligence reports found</p>
+          <h2>{getCategoryLabel(category)}</h2>
+          <p className="toolbar-sub">{filtered.length} headlines available</p>
         </div>
       </div>
 
-      {/* News Grid */}
       <section className="news-container">
         {filtered.map((news, index) => {
           const newsUrl    = news.url;
@@ -200,7 +225,6 @@ const Home = ({
 
           return (
             <article key={newsUrl || index} className="news-card">
-              {/* Image */}
               <div className="media">
                 <img
                   src={news.image || news.urlToImage || fallback}
@@ -211,24 +235,18 @@ const Home = ({
                 {fresh && <span className="badge">🔥 New</span>}
               </div>
 
-              {/* Content */}
               <div className="content">
-                {/* Meta */}
                 <div className="meta">
                   <span className="source">{news.source?.name || "Unknown"}</span>
                   {timeAgo && <span className="date">{timeAgo}</span>}
                   <span className="reading-time">⏱ {readTime} min read</span>
                 </div>
 
-                {/* Title */}
                 <h3 className="title">{news.title}</h3>
-
-                {/* Description */}
                 {news.description && (
                   <p className="description">{news.description}</p>
                 )}
 
-                {/* Actions */}
                 <div className="article-actions">
                   <a
                     className="read-more-btn"
@@ -265,7 +283,6 @@ const Home = ({
         })}
       </section>
 
-      {/* Load More */}
       {hasMore && (
         <div className="load-more-wrap">
           <button
@@ -284,11 +301,10 @@ const Home = ({
         </div>
       )}
 
-      {/* Category Explorer */}
       <section className="category-section">
         <div className="category-container">
           <h2 className="category-heading">
-            <span className="heading-text">✨ Explore Categories</span>
+            <span className="heading-text">Browse News Sections</span>
           </h2>
           <div className="category-grid">
             {CATEGORIES.map((c) => (

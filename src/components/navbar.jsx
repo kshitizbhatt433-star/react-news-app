@@ -1,16 +1,17 @@
 import { useState } from "react";
 
 const CATEGORIES = [
-  { label: "Intelligence", value: "general", emoji: "🕵️" },
-  { label: "Live News", value: "youtube", emoji: "🔴" },
-  { label: "Security", value: "business", emoji: "🔒" },
-  { label: "Investigations", value: "entertainment", emoji: "🔍" },
-  { label: "Analysis", value: "science", emoji: "📊" },
-  { label: "Cyber Intel", value: "darkweb", emoji: "💻" },
-  { label: "Social Media", value: "social", emoji: "📱" },
-  { label: "Data Leaks", value: "leaks", emoji: "💀" },
-  { label: "Reddit OSINT", value: "reddit", emoji: "🤖" },
-  { label: "RSS Feeds", value: "rss", emoji: "📡" },
+  { label: "Top Stories", value: "general", emoji: "📰" },
+  { label: "India", value: "india", emoji: "🇮🇳" },
+  { label: "World", value: "world", emoji: "🌍" },
+  { label: "Politics", value: "politics", emoji: "🏛️" },
+  { label: "Business", value: "business", emoji: "💼" },
+  { label: "Technology", value: "technology", emoji: "💡" },
+  { label: "Sports", value: "sports", emoji: "🏏" },
+  { label: "Entertainment", value: "entertainment", emoji: "🎬" },
+  { label: "Bollywood", value: "bollywood", emoji: "🎥" },
+  { label: "Science", value: "science", emoji: "🔬" },
+  { label: "Health", value: "health", emoji: "💊" },
 ];
 
 const COUNTRIES = [
@@ -47,10 +48,10 @@ const Navbar = ({
         <div className="brand center-brand">
           <div className="logo-wrapper">
             <h1 className="logo">
-              <span className="logo-text">🕵️ OSINT India</span>
-              <span className="logo-sticker">🕵️</span>
+              <span className="logo-text">� HeadlineX</span>
+              <span className="logo-sticker">📰</span>
             </h1>
-            <p className="tagline">Intelligence & News Analysis</p>
+            <p className="tagline">Trusted headlines, instantly.</p>
           </div>
         </div>
 
@@ -61,45 +62,13 @@ const Navbar = ({
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="🔍  Search intelligence reports..."
+              placeholder="🔍  Search headlines, topics, sources..."
               className="search-input"
-              aria-label="Search intelligence"
+              aria-label="Search headlines"
             />
           </div>
 
           <div className="right-controls">
-            {/* OSINT Tools */}
-            <div className="osint-tools">
-              <button
-                className="tool-btn"
-                onClick={() => window.open('https://www.google.com/search?q=site:pastebin.com', '_blank')}
-                title="Pastebin Search"
-              >
-                📋
-              </button>
-              <button
-                className="tool-btn"
-                onClick={() => window.open('https://haveibeenpwned.com/', '_blank')}
-                title="Have I Been Pwned"
-              >
-                🔐
-              </button>
-              <button
-                className="tool-btn"
-                onClick={() => window.open('https://www.shodan.io/', '_blank')}
-                title="Shodan Search"
-              >
-                🌐
-              </button>
-              <button
-                className="tool-btn"
-                onClick={() => window.open('https://www.maltego.com/', '_blank')}
-                title="Maltego"
-              >
-                🕸️
-              </button>
-            </div>
-
             {/* Dark mode */}
             <button
               className="theme-toggle"
