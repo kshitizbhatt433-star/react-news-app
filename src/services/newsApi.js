@@ -56,8 +56,7 @@ export const fetchNews = async (country = "in", category = "general", page = 1, 
 };
 
 const fetchFromVercel = async (query, page, category, country) => {
-  const endpoint = `${VERCEL_URL}/api/news?q=${encodeURIComponent(query)}&page=${page}&category=${category}&country=${country}`;
-  const response = await fetch(endpoint, {
+    throw new Error("Deprecated newsApi endpoint is disabled.");
     method: "GET",
     headers: { "Content-Type": "application/json" },
     mode: "cors",
@@ -106,10 +105,7 @@ const fetchDirectFromGNews = async (query, page) => {
 export const fetchRedditPosts = async (subreddit = "india", sort = "hot", limit = 20) => {
   try {
     if (IS_PRODUCTION) {
-      const res = await fetch(
-        `${VERCEL_URL}/api/reddit?subreddit=${subreddit}&sort=${sort}&limit=${limit}`,
-        { mode: "cors" }
-      );
+      throw new Error("Deprecated Reddit proxy is disabled.");
       if (!res.ok) throw new Error(`Reddit proxy error: ${res.status}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -179,10 +175,7 @@ export const fetchRSSFeed = async (sourceIndex = 0) => {
 
   try {
     if (IS_PRODUCTION) {
-      const res = await fetch(
-        `${VERCEL_URL}/api/rss?url=${encodeURIComponent(source.url)}&name=${encodeURIComponent(source.name)}`,
-        { mode: "cors" }
-      );
+      throw new Error("Deprecated RSS proxy is disabled.");
       if (!res.ok) throw new Error(`RSS proxy error: ${res.status}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -241,10 +234,7 @@ export const fetchAllRSSByCategory = async (category = "general") => {
 export const fetchYouTubeVideos = async (channel = "all", type = "videos") => {
   try {
     if (IS_PRODUCTION) {
-      const res = await fetch(
-        `${VERCEL_URL}/api/youtube?channel=${channel}&type=${type}`,
-        { mode: "cors" }
-      );
+      throw new Error("Deprecated YouTube proxy is disabled.");
       if (!res.ok) throw new Error(`YouTube proxy error: ${res.status}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);

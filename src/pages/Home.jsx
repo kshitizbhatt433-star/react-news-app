@@ -169,7 +169,7 @@ const Home = ({
 
   return (
     <main>
-      <LiveNewsTicker />
+      <LiveNewsTicker articles={trendingArticles.slice(0, 4)} />
 
       <section className="breaking-news">
         <div className="breaking-badge"><span className="breaking-dot"></span>Breaking News</div>
@@ -238,6 +238,7 @@ const Home = ({
               <div className="content">
                 <div className="meta">
                   <span className="source">{news.source?.name || "Unknown"}</span>
+                  <span className="category-tag">{getCategoryLabel(news.category || category)}</span>
                   {timeAgo && <span className="date">{timeAgo}</span>}
                   <span className="reading-time">⏱ {readTime} min read</span>
                 </div>
