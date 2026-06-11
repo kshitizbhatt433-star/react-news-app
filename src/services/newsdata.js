@@ -1,10 +1,4 @@
-const getEnvKey = (name) => {
-  const value = import.meta.env[name] || import.meta.env[`VITE_${name}`] || process?.env?.[name] || process?.env?.[`VITE_${name}`];
-  console.log(`${name}:`, value ? "Available" : "Missing");
-  return value;
-};
-
-const API_KEY = getEnvKey("NEWSDATA_API_KEY");
+const API_KEY = import.meta.env.NEWSDATA_API_KEY || import.meta.env.VITE_NEWSDATA_API_KEY || process?.env?.NEWSDATA_API_KEY || process?.env?.VITE_NEWSDATA_API_KEY || '';
 const SERVICE_NAME = "NewsData.io";
 
 const CATEGORY_SEARCH = {
