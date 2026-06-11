@@ -1,6 +1,5 @@
 import { fetchGNews } from "./gnews";
 import { fetchNewsData } from "./newsdata";
-import { fetchTheNewsApi } from "./thenewsapi";
 
 const cache = new Map();
 const CACHE_TTL = 1000 * 60 * 2;
@@ -26,7 +25,6 @@ export async function fetchNews(category = "general", country = "in", page = 1, 
   const sources = [
     { name: "NewsData.io", fn: fetchNewsData },
     { name: "GNews", fn: fetchGNews },
-    { name: "TheNewsAPI", fn: fetchTheNewsApi },
   ];
 
   const articles = [];
