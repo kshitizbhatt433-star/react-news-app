@@ -31,3 +31,4 @@ A professional news platform delivering breaking headlines, trending stories, an
 ## Deployment
 
 Deployed on Vercel with Netlify functions for API proxying.
+\n
