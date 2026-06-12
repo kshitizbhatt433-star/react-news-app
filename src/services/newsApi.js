@@ -2,12 +2,9 @@
 // Supports: GNews, Reddit, RSS feeds
 
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const VERCEL_URL = "https://headlinenewsx-app.vercel.app";
+const VERCEL_URL = import.meta.env.VITE_VERCEL_URL || "https://headlinenewsx-app.vercel.app";
 const IS_PRODUCTION = import.meta.env.MODE === "production";
 
-// ─────────────────────────────────────────
-// GNews — existing, unchanged
-// ─────────────────────────────────────────
 export const fetchNews = async (country = "in", category = "general", page = 1, searchTerm = "") => {
   try {
     let query = searchTerm;
@@ -31,20 +28,10 @@ export const fetchNews = async (country = "in", category = "general", page = 1, 
     }
 
     let articles = [];
-    let useDirectApi = false;
 
     if (IS_PRODUCTION) {
-      try {
-        articles = await fetchFromVercel(query, page, category, country);
-      } catch (vercelError) {
-        console.warn("Vercel failed, trying direct API...", vercelError);
-        useDirectApi = true;
-      }
+      articles = await fetchFromVercel(query, page, category, country);
     } else {
-      useDirectApi = true;
-    }
-
-    if (useDirectApi) {
       articles = await fetchDirectFromGNews(query, page);
     }
 
@@ -56,14 +43,29 @@ export const fetchNews = async (country = "in", category = "general", page = 1, 
 };
 
 const fetchFromVercel = async (query, page, category, country) => {
-    throw new Error("Deprecated newsApi endpoint is disabled.");
+  const params = new URLSearchParams({
+    category,
+    country,
+    page: String(page),
+    q: query || "",
+  });
+
+  const response = await fetch(`${VERCEL_URL}/api/news?${params.toString()}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     mode: "cors",
   });
-  if (!response.ok) throw new Error(`Vercel HTTP Error: ${response.status}`);
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`Vercel proxy error: ${response.status} ${text}`);
+  }
+
   const data = await response.json();
-  if (data.error) throw new Error(data.error);
+  if (!data || data.success !== true) {
+    throw new Error(data?.error || "Invalid response from Vercel proxy");
+  }
+
   return data.articles || [];
 };
 
