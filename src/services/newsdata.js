@@ -1,4 +1,4 @@
-const API_KEY = import.meta.env.NEWSDATA_API_KEY || import.meta.env.VITE_NEWSDATA_API_KEY || process?.env?.NEWSDATA_API_KEY || process?.env?.VITE_NEWSDATA_API_KEY || '';
+const API_KEY = import.meta.env.VITE_NEWSDATA_API_KEY || '';
 const SERVICE_NAME = "NewsData.io";
 
 const CATEGORY_SEARCH = {

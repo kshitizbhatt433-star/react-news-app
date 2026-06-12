@@ -5,8 +5,8 @@ const cache = new Map();
 const CACHE_TTL = 1000 * 60 * 2;
 
 const envStatus = {
-  GNEWS_API_KEY: Boolean(import.meta.env.GNEWS_API_KEY || import.meta.env.VITE_GNEWS_API_KEY || process?.env?.GNEWS_API_KEY || process?.env?.VITE_GNEWS_API_KEY),
-  NEWSDATA_API_KEY: Boolean(import.meta.env.NEWSDATA_API_KEY || import.meta.env.VITE_NEWSDATA_API_KEY || process?.env?.NEWSDATA_API_KEY || process?.env?.VITE_NEWSDATA_API_KEY),
+  GNEWS_API_KEY: Boolean(import.meta.env.VITE_GNEWS_API_KEY),
+  NEWSDATA_API_KEY: Boolean(import.meta.env.VITE_NEWSDATA_API_KEY),
 };
 console.log("Environment key status:", {
   GNEWS_API_KEY: envStatus.GNEWS_API_KEY ? "Available" : "Missing",
