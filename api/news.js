@@ -27,22 +27,10 @@ export default async function handler(req, res) {
       return res.status(200).json(cached.value);
     }
 
-    const sources = [];
-    if (process.env.NEWSDATA_API_KEY) {
-      sources.push({ name: "NewsData.io", fetcher: fetchNewsDataArticles });
-    }
-    if (process.env.NEWS_API_KEY) {
-      sources.push({ name: "GNews", fetcher: fetchGNewsArticles });
-    }
-    if (process.env.THENEWSAPI_KEY) {
-      sources.push({ name: "TheNewsAPI", fetcher: fetchTheNewsApiArticles });
-    }
-
-    if (!sources.length) {
-      return res.status(500).json({
-        error: "No news API keys are configured. Please add NEWS_API_KEY, NEWSDATA_API_KEY, or THENEWSAPI_KEY.",
-      });
-    }
+   const sources = [
+  { name: "NewsData.io", fetcher: fetchNewsDataArticles },
+  { name: "GNews", fetcher: fetchGNewsArticles },
+];
 
     const settled = await Promise.allSettled(
       sources.map((source) =>
@@ -53,7 +41,7 @@ export default async function handler(req, res) {
     const errors = [];
     const articles = [];
 
-    settled.forEach((result, index) => {
+    settled.forEach((result, index) => { 
       const sourceName = sources[index].name;
       if (result.status === "fulfilled") {
         articles.push(...result.value);

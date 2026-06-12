@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://kshitizbhatt433-star.github.io/react-news-app/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
