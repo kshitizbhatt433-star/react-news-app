@@ -2,17 +2,15 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/news.js": {
-      "memory": 128,
-      "maxDuration": 30
-    },
-    "api/reddit.js": {
-      "memory": 128,
-      "maxDuration": 30
-    },
-    "api/rss.js": {
-      "memory": 128,
-      "maxDuration": 30
-    }
-  }
+    "api/news.js":       { "memory": 128, "maxDuration": 30 },
+    "api/gnews.js":      { "memory": 128, "maxDuration": 30 },
+    "api/newsdata.js":   { "memory": 128, "maxDuration": 30 },
+    "api/thenewsapi.js": { "memory": 128, "maxDuration": 30 },
+    "api/reddit.js":     { "memory": 128, "maxDuration": 30 },
+    "api/rss.js":        { "memory": 128, "maxDuration": 30 }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/(.*)",       "destination": "/index.html" }
+  ]
 }
