@@ -10,17 +10,20 @@ export async function fetchNewsDataArticles({ category, country, searchTerm, pag
   const params = new URLSearchParams({
     apikey: API_KEY,
     language: "en",
-    page: String(page),
   });
   if (query) params.set("q", query);
   if (newsDataCategory) params.set("category", newsDataCategory);
   if (countryParam) params.set("country", countryParam);
+  // NewsData.io's `page` param is a cursor token from a previous response, not a plain integer.
+  // Only forward it if it's not the initial page request.
+  if (page && page !== 1 && page !== "1") params.set("page", String(page));
 
   const response = await fetch(`https://newsdata.io/api/1/news?${params.toString()}`);
   const data = await response.json();
 
   if (!response.ok || data.status === "error") {
-    throw new Error(data?.message || `NewsData.io failed with ${response.status}`);
+    const detail = data?.results?.message || data?.message || JSON.stringify(data);
+    throw new Error(`NewsData.io failed with ${response.status}: ${detail}`);
   }
 
   return (Array.isArray(data.results) ? data.results : [])
