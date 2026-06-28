@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// GH_PAGES=true is set only in the GitHub Actions workflow.
+// Vercel builds normally with no base (serves from root).
+const isGhPages = process.env.GH_PAGES === 'true'
+
 export default defineConfig({
   plugins: [react()],
-  // No base — Vercel serves from root
-  // No API keys — they live only in Vercel env vars, accessed by /api/* functions
+  base: isGhPages ? '/react-news-app/' : '/',
 })

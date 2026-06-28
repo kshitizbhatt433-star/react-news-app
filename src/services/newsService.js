@@ -1,11 +1,19 @@
 // ─────────────────────────────────────────────────────────────────
 // newsService.js — the ONLY news file the frontend uses
-// All API calls go to /api/news (Vercel serverless function)
+// On Vercel: calls its own /api/news (relative, same origin)
+// On GitHub Pages: calls the Vercel-hosted /api/news (absolute URL),
+//   since GitHub Pages can't run serverless functions itself
 // No API keys ever touch the browser
 // ─────────────────────────────────────────────────────────────────
 
 const CACHE = new Map();
 const CACHE_TTL = 1000 * 60 * 2; // 2 minutes
+
+// Set this to your real Vercel deployment URL.
+const VERCEL_API_BASE = "https://react-news-app-sandy.vercel.app";
+
+const isGhPages = typeof window !== "undefined" && window.location.hostname.endsWith("github.io");
+const API_BASE = isGhPages ? VERCEL_API_BASE : "";
 
 export async function fetchNews(category = "general", country = "in", page = 1, searchTerm = "") {
   const cacheKey = `${category}|${country}|${page}|${searchTerm}`;
@@ -19,7 +27,7 @@ export async function fetchNews(category = "general", country = "in", page = 1, 
     q: searchTerm || "",
   });
 
-  const response = await fetch(`/api/news?${params.toString()}`);
+  const response = await fetch(`${API_BASE}/api/news?${params.toString()}`);
 
   let data;
   try {
