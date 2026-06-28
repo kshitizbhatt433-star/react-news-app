@@ -76,6 +76,8 @@ const Home = ({
   );
   const [selectedState, setSelectedState] = useState(null);
 
+  const [loadMoreError, setLoadMoreError] = useState(null);
+
   const fetchNewsPage = useCallback(async (pageNum = 1, append = false) => {
     pageNum === 1 ? setLoading(true) : setLoadingMore(true);
     try {
@@ -87,11 +89,20 @@ const Home = ({
       const newArticles = await fetchNews(category, country, pageNum, searchQuery);
 
       setApiError(null);
+      setLoadMoreError(null);
       setArticles((prev) => append ? [...prev, ...newArticles] : newArticles);
       setHasMore(newArticles.length > 0);
     } catch (err) {
-      setApiError(err.message || "Network error. Please check your API key.");
-      if (pageNum === 1) setArticles([]);
+      const message = err.message || "Network error. Please check your API key.";
+      if (append) {
+        // Don't wipe the page for a Load More failure — show inline error,
+        // keep existing articles, and stop offering further pages.
+        setLoadMoreError(message);
+        setHasMore(false);
+      } else {
+        setApiError(message);
+        setArticles([]);
+      }
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -283,6 +294,20 @@ const Home = ({
           );
         })}
       </section>
+
+      {loadMoreError && (
+        <div className="load-more-wrap">
+          <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 10 }}>
+            Couldn't load more articles: {loadMoreError}
+          </p>
+          <button
+            className="load-more-btn"
+            onClick={() => { setHasMore(true); fetchNewsPage(page, true); }}
+          >
+            Try Again
+          </button>
+        </div>
+      )}
 
       {hasMore && (
         <div className="load-more-wrap">

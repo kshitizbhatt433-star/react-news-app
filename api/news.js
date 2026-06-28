@@ -20,9 +20,13 @@ export default async function handler(req, res) {
     }
 
     // Priority order: NewsData.io → GNews → TheNewsAPI
-    // Each is only added if its key exists in Vercel env vars
+    // NewsData.io has no integer-based pagination on this plan — it only
+    // supports a cursor token from a previous response — so it is only
+    // ever called for page 1. GNews and TheNewsAPI support real page
+    // numbers and carry pages 2+.
+    const pageNum = Number(page) || 1;
     const sources = [];
-    if (process.env.NEWSDATA_API_KEY) {
+    if (process.env.NEWSDATA_API_KEY && pageNum === 1) {
       sources.push({ name: "NewsData.io", fetcher: fetchNewsDataArticles });
     }
     if (process.env.GNEWS_API_KEY) {
@@ -40,7 +44,7 @@ export default async function handler(req, res) {
     }
 
     const settled = await Promise.allSettled(
-      sources.map((s) => s.fetcher({ category, country, searchTerm: q, page: Number(page) }))
+      sources.map((s) => s.fetcher({ category, country, searchTerm: q, page: pageNum }))
     );
 
     const articles = [];

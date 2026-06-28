@@ -1,6 +1,6 @@
 import { buildCategoryOptions, normalizePublishedAt, sanitizeUrl, isValidArticle, setCorsHeaders } from "./news-utils.js";
 
-const API_KEY = process.env.NEWS_API_KEY;
+const API_KEY = process.env.GNEWS_API_KEY;
 const SERVICE_NAME = "GNews";
 
 export async function fetchGNewsArticles({ category, country, searchTerm, page = 1 }) {

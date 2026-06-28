@@ -2,7 +2,7 @@ import { buildCategoryOptions, normalizePublishedAt, sanitizeUrl, isValidArticle
 
 const SERVICE_NAME = "NewsData.io";
 
-export async function fetchNewsDataArticles({ category, country, searchTerm, page = 1 }) {
+export async function fetchNewsDataArticles({ category, country, searchTerm }) {
   const API_KEY = process.env.NEWSDATA_API_KEY;
   if (!API_KEY) throw new Error("NEWSDATA_API_KEY is not set in environment variables.");
 
@@ -14,9 +14,9 @@ export async function fetchNewsDataArticles({ category, country, searchTerm, pag
   if (query) params.set("q", query);
   if (newsDataCategory) params.set("category", newsDataCategory);
   if (countryParam) params.set("country", countryParam);
-  // NewsData.io's `page` param is a cursor token from a previous response, not a plain integer.
-  // Only forward it if it's not the initial page request.
-  if (page && page !== 1 && page !== "1") params.set("page", String(page));
+  // Intentionally never send a `page` param: NewsData.io's pagination requires
+  // a cursor token from a previous response's `nextPage` field, not a plain
+  // integer. This function is only ever called for page 1 (see api/news.js).
 
   const response = await fetch(`https://newsdata.io/api/1/news?${params.toString()}`);
   const data = await response.json();
