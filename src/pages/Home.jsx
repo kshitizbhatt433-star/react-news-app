@@ -8,6 +8,7 @@ const CATEGORIES = [
   { emoji: "�", label: "Top Stories", desc: "The day’s most important headlines", cat: "general", country: "in" },
   { emoji: "🇮🇳", label: "India", desc: "Local news from across India", cat: "india", country: "in" },
   { emoji: "🌍", label: "World", desc: "Global headlines and breaking coverage", cat: "world", country: null },
+  { emoji: "🛡️", label: "Defense & War", desc: "Military, defense and geopolitical developments", cat: "defense", country: null },
   { emoji: "🏛️", label: "Politics", desc: "Government, policy and elections", cat: "politics", country: null },
   { emoji: "💼", label: "Business", desc: "Markets, economy and corporate news", cat: "business", country: null },
   { emoji: "💡", label: "Technology", desc: "Innovation, gadgets and startups", cat: "technology", country: null },
@@ -41,6 +42,7 @@ function getCategoryLabel(category) {
     case "general": return "Top Stories";
     case "india": return "India News";
     case "world": return "World News";
+    case "defense": return "Defense & War";
     case "politics": return "Politics";
     case "business": return "Business";
     case "technology": return "Technology";

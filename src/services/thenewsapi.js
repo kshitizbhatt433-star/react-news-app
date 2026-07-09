@@ -11,6 +11,7 @@ const CATEGORY_SEARCH = {
   general: "top stories",
   india: "india news",
   world: "world news",
+  defense: "defense OR military OR armed forces OR war OR army OR navy OR air force OR missile OR border security OR geopolitics OR national security",
   politics: "politics",
   business: "business",
   technology: "technology",

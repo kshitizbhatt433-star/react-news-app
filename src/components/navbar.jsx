@@ -4,6 +4,7 @@ const CATEGORIES = [
   { label: "Top Stories", value: "general", emoji: "📰" },
   { label: "India", value: "india", emoji: "🇮🇳" },
   { label: "World", value: "world", emoji: "🌍" },
+  { label: "Defense & War", value: "defense", emoji: "🛡️" },
   { label: "Politics", value: "politics", emoji: "🏛️" },
   { label: "Business", value: "business", emoji: "💼" },
   { label: "Technology", value: "technology", emoji: "💡" },

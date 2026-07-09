@@ -17,6 +17,12 @@ const CATEGORY_CONFIG = {
     theNewsCategory: null,
     countryParam: null,
   },
+  defense: {
+    q: "defense OR military OR armed forces OR war OR army OR navy OR air force OR missile OR border security OR geopolitics OR national security",
+    newsDataCategory: null,
+    theNewsCategory: null,
+    countryParam: null,
+  },
   politics: {
     q: null,
     newsDataCategory: "politics",
